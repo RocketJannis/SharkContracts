@@ -1,12 +1,14 @@
 package net.sharksystem.contracts;
 
 import java.io.*;
+import java.util.List;
 
 public class TestUtils {
-    static final CharSequence ALICE = "Alice";
-    static final CharSequence BOB = "Bob";
-    static final CharSequence YOUR_APP_NAME = "yourAppName";
-    static final CharSequence YOUR_URI = "yourSchema://example";
+    public static final String ALICE = "alice";
+    public static final String BOB = "bob";
+    public static final String APP_NAME = "contracts";
+    public static final String APP_URI = "contract://data";
+    public static final List<CharSequence> supportedFormats = List.of(APP_NAME);
 
     /**
      * a serialization example

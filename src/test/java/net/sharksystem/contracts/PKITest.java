@@ -20,19 +20,13 @@ import java.util.*;
 
 public class PKITest {
 
-    private static final String ALICE = "alice";
-    private static final String BOB = "bob";
-    private static final String APP_NAME = "contracts";
-    private static final String APP_URI = "contract://data";
-    private static final List<CharSequence> supportedFormats = List.of(APP_NAME);
-
     @Test
     public void testPKI() throws SharkException, IOException, SharkUnknownBehaviourException, InterruptedException {
-        ASAPTestPeerFS aliceASAP = new ASAPTestPeerFS(ALICE, supportedFormats);
-        ASAPTestPeerFS bobASAP = new ASAPTestPeerFS(BOB, supportedFormats);
+        ASAPTestPeerFS aliceASAP = new ASAPTestPeerFS(TestUtils.ALICE, TestUtils.supportedFormats);
+        ASAPTestPeerFS bobASAP = new ASAPTestPeerFS(TestUtils.BOB, TestUtils.supportedFormats);
 
-        SharkPeer alice = createTestPeer(ALICE);
-        SharkPeer bob = createTestPeer(BOB);
+        SharkPeer alice = createTestPeer(TestUtils.ALICE);
+        SharkPeer bob = createTestPeer(TestUtils.BOB);
 
         alice.start(aliceASAP);
         bob.start(bobASAP);
@@ -71,10 +65,10 @@ public class PKITest {
 
         // PART 2 send encrypted message
         String message = "hello world!";
-        byte[] encryptedMessage = ASAPCryptoAlgorithms.produceEncryptedMessagePackage(message.getBytes(StandardCharsets.UTF_8), BOB, alicePKI.getASAPKeyStore());
-        aliceASAP.sendASAPMessage(APP_NAME, APP_URI, encryptedMessage);
+        byte[] encryptedMessage = ASAPCryptoAlgorithms.produceEncryptedMessagePackage(message.getBytes(StandardCharsets.UTF_8), TestUtils.BOB, alicePKI.getASAPKeyStore());
+        aliceASAP.sendASAPMessage(TestUtils.APP_NAME, TestUtils.APP_URI, encryptedMessage);
 
-        bobASAP.addASAPMessageReceivedListener(APP_NAME, (asapMessages, s, list) -> {
+        bobASAP.addASAPMessageReceivedListener(TestUtils.APP_NAME, (asapMessages, s, list) -> {
             // decrypt and print the message
             Iterator<byte[]> it = asapMessages.getMessages();
             while (it.hasNext()){
