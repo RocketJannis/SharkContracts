@@ -2,6 +2,7 @@ package net.sharksystem.contracts.storage;
 
 import net.sharksystem.contracts.Contract;
 import net.sharksystem.contracts.ContractSignature;
+import net.sharksystem.utils.Log;
 
 import java.util.ArrayList;
 import java.util.List;

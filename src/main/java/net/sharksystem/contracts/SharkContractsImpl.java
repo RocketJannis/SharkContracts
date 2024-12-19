@@ -6,11 +6,11 @@ import net.sharksystem.asap.*;
 import net.sharksystem.asap.crypto.ASAPCryptoAlgorithms;
 import net.sharksystem.contracts.storage.ContractStorage;
 import net.sharksystem.pki.SharkPKIComponent;
+import net.sharksystem.utils.Log;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,6 +61,8 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
         byte[] data = ContractSerializer.serialize(contract);
         asapPeer.sendASAPMessage(APP_NAME, URI_CONTRACT, data);
 
+        Log.writeLog(this, "Created contract " + hash);
+
         return contract;
     }
 
@@ -79,6 +81,8 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
         byte[] data = SignatureSerializer.serialize(signature);
         asapPeer.sendASAPMessage(APP_NAME, URI_SIGNATURE, data);
 
+        Log.writeLog(this, "Signed contract " + contract.getHash());
+
         return signature;
     }
 
@@ -88,14 +92,14 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
         if(!contract.getHash().equals(calculatedHash)) return false; // hash does not match
 
         // verify signature
-        return ASAPCryptoAlgorithms.verify(calculatedHash.getBytes(StandardCharsets.UTF_8), contract.getSignature(), "", pki.getASAPKeyStore());
+        return ASAPCryptoAlgorithms.verify(calculatedHash.getBytes(StandardCharsets.UTF_8), contract.getSignature(), contract.getAuthorId(), pki.getASAPKeyStore());
     }
 
     @Override
     public boolean verifySignature(ContractSignature signature) throws ASAPSecurityException, NoSuchAlgorithmException {
         String calculatedHash = ContractSignature.hashSignedData(signature.getContractHash(), signature.getAuthor());
 
-        return ASAPCryptoAlgorithms.verify(calculatedHash.getBytes(StandardCharsets.UTF_8), signature.getSignature(), "", pki.getASAPKeyStore());
+        return ASAPCryptoAlgorithms.verify(calculatedHash.getBytes(StandardCharsets.UTF_8), signature.getSignature(), signature.getAuthor(), pki.getASAPKeyStore());
     }
 
     @Override
@@ -113,6 +117,7 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
 
     @Override
     public void asapMessagesReceived(ASAPMessages messages, String senderE2E, List<ASAPHop> hops) throws IOException {
+        Log.writeLog(this, "Received messages format=" + messages.getFormat() + ", uri=" + messages.getURI() + ", size=" + messages.size());
         Iterator<byte[]> iterator = messages.getMessages();
         while (iterator.hasNext()){
             byte[] data = iterator.next();
@@ -126,13 +131,15 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
     private void onContractReceived(byte[] data){
         try {
             Contract contract = ContractSerializer.deserialize(data);
+            Log.writeLog(this, "Received contract " + contract.getHash());
             if(verifyContract(contract)){
+                Log.writeLog(this, "Verification successful.");
                 storage.insertContract(contract);
             }else{
-                // TODO hanlde
+                Log.writeLog(this, "Verification failed.");
             }
         }catch (Exception e){
-            // TODO handle
+            Log.writeLogErr(this, "Could not process contract: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -140,13 +147,15 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
     private void onSignatureReceived(byte[] data){
         try {
             ContractSignature signature = SignatureSerializer.deserialize(data);
+            Log.writeLog(this, "Received signature for " + signature.getContractHash() + " by " + signature.getAuthor());
             if(verifySignature(signature)){
+                Log.writeLog(this, "Verification successful.");
                 storage.insertSignature(signature);
             }else{
-                // TODO handle
+                Log.writeLog(this, "Verification failed.");
             }
         }catch (Exception e){
-            // TODO handle
+            Log.writeLogErr(this, "Could not process contract signature: " + e.getMessage());
             e.printStackTrace();
         }
     }

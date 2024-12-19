@@ -29,7 +29,7 @@ public class SignatureSerializer {
 
             String contractHash = dis.readUTF();
             String author = dis.readUTF();
-            int signatureLength = dis.readShort();
+            int signatureLength = dis.readInt();
             byte[] signature = dis.readNBytes(signatureLength);
             dis.close();
 
