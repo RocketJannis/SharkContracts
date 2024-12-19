@@ -45,6 +45,8 @@ public class ContractsSignTest {
         // Encounter so both parties know each other
         aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
         Thread.sleep(1000);
+        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
+        Thread.sleep(1000);
 
         // Create contract using alice
         ASAPCertificate bobsCertIssuedByAlice = alicePKI.getCertificates().stream().findFirst().get();
@@ -54,6 +56,8 @@ public class ContractsSignTest {
         Assertions.assertEquals(1, aliceContracts.listContracts().size());
 
         // Encounter so bob knows the contract
+        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
+        Thread.sleep(1000);
         aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
         Thread.sleep(1000);
 
