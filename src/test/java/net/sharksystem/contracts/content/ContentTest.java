@@ -1,6 +1,5 @@
-package net.sharksystem.contracts.conent;
+package net.sharksystem.contracts.content;
 
-import net.sharksystem.contracts.content.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
