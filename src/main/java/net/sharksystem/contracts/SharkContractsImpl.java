@@ -8,14 +8,20 @@ import net.sharksystem.contracts.storage.ContractStorage;
 import net.sharksystem.pki.SharkPKIComponent;
 import net.sharksystem.utils.Log;
 
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 
 public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedListener {
+
+    private static final String SYMMETRIC_ALGORITHM = "AES";
 
     private ASAPPeer asapPeer;
     private final SharkPeer me;
@@ -48,22 +54,29 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
     }
 
     @Override
-    public Contract createContract(byte[] content, List<String> otherParties) throws SharkException, NoSuchAlgorithmException {
+    public Contract createContract(byte[] content, List<String> otherPartyIds, boolean encrypted) throws SharkException, NoSuchAlgorithmException {
         String authorId = pki.getOwnerID().toString();
-        String hash = Contract.hashSignedData(authorId, content, otherParties);
+        String hash = Contract.hashSignedData(authorId, content, otherPartyIds);
         byte[] signature = ASAPCryptoAlgorithms.sign(hash.getBytes(StandardCharsets.UTF_8), pki.getASAPKeyStore());
-        Contract contract = new Contract(authorId, content, otherParties, hash, signature);
+        List<ContractParty> otherParties = otherPartyIds.stream().map((id) -> new ContractParty(id, new byte[0])).toList();
+        Contract unencryptedContract = new Contract(authorId, content, otherParties, false, hash, signature);
+        Contract encryptedContract;
+        if(encrypted){
+            encryptedContract = encryptContract(unencryptedContract);
+        } else {
+            encryptedContract = unencryptedContract;
+        }
 
         // insert into local storage
-        storage.insertContract(contract);
+        storage.insertContract(unencryptedContract);
 
         // publish contract
-        byte[] data = ContractSerializer.serialize(contract);
+        byte[] data = ContractSerializer.serialize(encryptedContract);
         asapPeer.sendASAPMessage(APP_NAME, URI_CONTRACT, data);
 
         Log.writeLog(this, "Created contract " + hash);
 
-        return contract;
+        return unencryptedContract;
     }
 
     @Override
@@ -88,7 +101,7 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
 
     @Override
     public boolean verifyContract(Contract contract) throws NoSuchAlgorithmException, ASAPSecurityException {
-        String calculatedHash = Contract.hashSignedData(contract.getAuthorId(), contract.getContent(), contract.getOtherParties());
+        String calculatedHash = Contract.hashSignedData(contract.getAuthorId(), contract.getContent(), contract.getOtherPartyIds());
         if(!contract.getHash().equals(calculatedHash)) return false; // hash does not match
 
         // verify signature
@@ -105,8 +118,8 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
     @Override
     public boolean isSignedByAllParties(Contract contract) {
         List<ContractSignature> signatures = storage.findSignatures(contract);
-        for(String party : contract.getOtherParties()){
-            boolean signatureIsPresent = signatures.stream().anyMatch(s -> s.getAuthor().equals(party));
+        for(ContractParty party : contract.getOtherParties()){
+            boolean signatureIsPresent = signatures.stream().anyMatch(s -> s.getAuthor().equals(party.getId()));
             if(!signatureIsPresent){
                 return false;
             }
@@ -130,8 +143,9 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
 
     private void onContractReceived(byte[] data){
         try {
-            Contract contract = ContractSerializer.deserialize(data);
-            Log.writeLog(this, "Received contract " + contract.getHash());
+            Contract encryptedContract = ContractSerializer.deserialize(data);
+            Log.writeLog(this, "Received contract " + encryptedContract.getHash());
+            Contract contract = decryptContract(encryptedContract);
             if(verifyContract(contract)){
                 Log.writeLog(this, "Verification successful.");
                 storage.insertContract(contract);
@@ -158,6 +172,48 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
             Log.writeLogErr(this, "Could not process contract signature: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private Contract encryptContract(Contract contract) throws ASAPSecurityException, NoSuchAlgorithmException {
+        if(contract.isEncrypted()) return contract; // is already encrypted
+        Log.writeLog(this, "Encrypting contract " + contract.getHash());
+
+        // Create symmetric key and encrypt content
+        SecretKey secretKey = KeyGenerator.getInstance(SYMMETRIC_ALGORITHM).generateKey();
+        byte[] keyBytes = secretKey.getEncoded();
+        byte[] encryptedContent = ASAPCryptoAlgorithms.encryptSymmetric(contract.getContent(), secretKey, pki.getASAPKeyStore());
+
+        // Encrypt key for all parties
+        List<ContractParty> parties = new ArrayList<>();
+        for(ContractParty party : contract.getOtherParties()){
+            byte[] encryptedKey = ASAPCryptoUtilsExtension.encryptAsymmetric(keyBytes, party.getId(), pki.getASAPKeyStore());
+            parties.add(new ContractParty(party.getId(), encryptedKey));
+        }
+
+        return new Contract(contract.getAuthorId(), encryptedContent, parties, true, contract.getHash(), contract.getSignature());
+    }
+
+    private Contract decryptContract(Contract contract) throws ASAPSecurityException {
+        if(!contract.isEncrypted()) return contract; // is already decrypted
+        Log.writeLog(this, "Decrypting contract " + contract.getHash());
+
+        // Retrieve ContractParty directing to the current user
+        String myId = pki.getOwnerID().toString();
+        Optional<ContractParty> myPartyOptional = contract.getOtherParties()
+                .stream()
+                .filter((party) -> myId.equals(party.getId())).findFirst();
+        if(myPartyOptional.isEmpty()) throw new ASAPSecurityException("Cannot find encryption key for " + myId);
+        ContractParty myParty = myPartyOptional.get();
+
+        // Decrypt key
+        byte[] symmetricKeyBytes = ASAPCryptoAlgorithms.decryptAsymmetric(myParty.getEncryptedKey(), pki.getASAPKeyStore());
+        SecretKey symmetricKey = new SecretKeySpec(symmetricKeyBytes, SYMMETRIC_ALGORITHM);
+
+        // Decrypt content
+        byte[] unencryptedContent = ASAPCryptoAlgorithms.decryptSymmetric(contract.getContent(), symmetricKey, pki.getASAPKeyStore());
+
+        // Return copy with unencrypted data
+        return new Contract(contract.getAuthorId(), unencryptedContent, contract.getOtherParties(), false, contract.getHash(), contract.getSignature());
     }
 
 }

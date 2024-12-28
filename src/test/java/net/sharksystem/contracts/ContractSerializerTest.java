@@ -14,11 +14,11 @@ public class ContractSerializerTest {
     public void testSerialization() throws NoSuchAlgorithmException {
         String authorId = "test_sender";
         byte[] content = "abcdefg".getBytes(StandardCharsets.UTF_8);
-        List<String> otherParties = Arrays.asList("Alice", "Bob");
-        String hash = Contract.hashSignedData(authorId, content, otherParties);
+        List<ContractParty> otherParties = Arrays.asList(new ContractParty("Alice", new byte[]{ 1, 2 }), new ContractParty("Bob", new byte[]{ 3, 4 }));
+        String hash = Contract.hashSignedData(authorId, content, otherParties.stream().map(ContractParty::getId).toList());
         byte[] signature = "sig".getBytes(StandardCharsets.UTF_8);
 
-        Contract contract = new Contract(authorId, content, otherParties, hash, signature);
+        Contract contract = new Contract(authorId, content, otherParties, false, hash, signature);
 
         byte[] serialized = ContractSerializer.serialize(contract);
         Contract deserialized = ContractSerializer.deserialize(serialized);

@@ -12,15 +12,17 @@ public class Contract {
 
     private final String authorId;
     private final byte[] content;
-    private final List<String> otherParties;
+    private final List<ContractParty> otherParties;
+    private final boolean encrypted;
 
     private final String hash;
     private final byte[] signature;
 
-    public Contract(String authorId, byte[] content, List<String> otherParties, String hash, byte[] signature) {
+    public Contract(String authorId, byte[] content, List<ContractParty> otherParties, boolean encrypted, String hash, byte[] signature) {
         this.authorId = authorId;
         this.content = content;
         this.otherParties = otherParties;
+        this.encrypted = encrypted;
         this.hash = hash;
         this.signature = signature;
     }
@@ -33,16 +35,28 @@ public class Contract {
         return content;
     }
 
-    public List<String> getOtherParties() {
+    public List<ContractParty> getOtherParties() {
         return otherParties;
     }
 
+    public List<String> getOtherPartyIds(){
+        return otherParties.stream().map(ContractParty::getId).toList();
+    }
+
+    /**
+     * Hash of the contract using the authorId, unencrypted content and parties
+     * @return
+     */
     public String getHash() {
         return hash;
     }
 
     public byte[] getSignature() {
         return signature;
+    }
+
+    public boolean isEncrypted() {
+        return encrypted;
     }
 
     public static String hashSignedData(String authorId, byte[] content, List<String> otherParties) throws NoSuchAlgorithmException {

@@ -21,7 +21,16 @@ public interface SharkContracts extends SharkComponent {
 
     List<Contract> listContracts();
 
-    Contract createContract(byte[] content, List<String> otherParties) throws SharkException, NoSuchAlgorithmException;
+    /**
+     *
+     * @param content
+     * @param otherParties
+     * @param encrypted
+     * @return unencrypted contract
+     * @throws SharkException
+     * @throws NoSuchAlgorithmException
+     */
+    Contract createContract(byte[] content, List<String> otherParties, boolean encrypted) throws SharkException, NoSuchAlgorithmException;
 
     ContractSignature signContract(Contract contract) throws NoSuchAlgorithmException, ASAPException;
 

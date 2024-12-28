@@ -12,17 +12,48 @@ import net.sharksystem.contracts.storage.TemporaryInMemoryStorage;
 import net.sharksystem.pki.SharkPKIComponent;
 import net.sharksystem.pki.SharkPKIComponentFactory;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ContractsSignTest {
 
+    @BeforeEach
+    public void cleanDirectories() throws IOException {
+        deleteDir("alice");
+        deleteDir("bob");
+        deleteDir("testPeerFS");
+    }
+
+    private void deleteDir(String dir) throws IOException {
+        Path pathToBeDeleted = Paths.get(dir);
+
+        try (Stream<Path> paths = Files.walk(pathToBeDeleted)) {
+            paths.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        }
+    }
+
     @Test
-    public void testContractsSign() throws IOException, SharkException, InterruptedException, SharkUnknownBehaviourException, NoSuchAlgorithmException {
+    public void testContractsSignUnencrypted() throws SharkException, SharkUnknownBehaviourException, IOException, NoSuchAlgorithmException, InterruptedException {
+        testContractsSign(false);
+    }
+
+    @Test
+    public void testContractsSignEncrypted() throws SharkException, SharkUnknownBehaviourException, IOException, NoSuchAlgorithmException, InterruptedException {
+        testContractsSign(true);
+    }
+
+    private void testContractsSign(boolean encrypted) throws IOException, SharkException, InterruptedException, SharkUnknownBehaviourException, NoSuchAlgorithmException {
         // Init ASAP/Shark Setup with SharkContracts
         ASAPTestPeerFS aliceASAP = new ASAPTestPeerFS(TestUtils.ALICE, TestUtils.supportedFormats);
         ASAPTestPeerFS bobASAP = new ASAPTestPeerFS(TestUtils.BOB, TestUtils.supportedFormats);
@@ -52,7 +83,7 @@ public class ContractsSignTest {
         ASAPCertificate bobsCertIssuedByAlice = alicePKI.getCertificates().stream().findFirst().get();
         byte[] testContent = "Hello world!".getBytes(StandardCharsets.UTF_8);
         Assertions.assertEquals(0, aliceContracts.listContracts().size());
-        aliceContracts.createContract(testContent, List.of(bobsCertIssuedByAlice.getSubjectID().toString()));
+        aliceContracts.createContract(testContent, List.of(bobsCertIssuedByAlice.getSubjectID().toString()), encrypted);
         Assertions.assertEquals(1, aliceContracts.listContracts().size());
 
         // Encounter so bob knows the contract
