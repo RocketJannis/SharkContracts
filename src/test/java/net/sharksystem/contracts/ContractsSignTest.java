@@ -37,6 +37,7 @@ public class ContractsSignTest {
 
     private void deleteDir(String dir) throws IOException {
         Path pathToBeDeleted = Paths.get(dir);
+        if(!pathToBeDeleted.toFile().exists()) return;
 
         try (Stream<Path> paths = Files.walk(pathToBeDeleted)) {
             paths.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
