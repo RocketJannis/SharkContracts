@@ -1,10 +1,11 @@
 package net.sharksystem.contracts.content;
 
 import net.sharksystem.ASAPFormats;
+import net.sharksystem.SharkComponent;
 import net.sharksystem.contracts.Contract;
 
 @ASAPFormats(formats = { })
-public interface ContractContents {
+public interface ContractContents extends SharkComponent {
 
     default ContentPackage extract(Contract contract) throws UnknownContentTypeException, MalformedContentData {
         if(contract.isEncrypted()) throw new IllegalArgumentException("Given contract is encrypted");

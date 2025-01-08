@@ -91,6 +91,8 @@ public class ContractsSignTest {
         Thread.sleep(1000);
         aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
         Thread.sleep(1000);
+        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
+        Thread.sleep(1000);
 
         // Sign contract using bob
         Assertions.assertEquals(1, bobContracts.listContracts().size());

@@ -21,6 +21,8 @@ public interface SharkContracts extends SharkComponent {
 
     List<Contract> listContracts();
 
+    List<ContractSignature> listSignatures(Contract contract);
+
     /**
      *
      * @param content

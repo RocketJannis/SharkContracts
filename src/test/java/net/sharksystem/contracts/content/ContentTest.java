@@ -10,12 +10,13 @@ public class ContentTest {
         ContractContents contents = new ContractContentsImpl();
         contents.registerType("text", TextContent.class);
 
-        TextContent content = new TextContent("Test");
+        TextContent content = new TextContent("Title", "Test");
         byte[] data = contents.pack(content);
         ContentPackage extracted = contents.extract(data);
 
         Assertions.assertInstanceOf(TextContent.class, extracted.getContent());
         Assertions.assertEquals(((TextContent) extracted.getContent()).getText(), content.getText());
+        Assertions.assertEquals(((TextContent) extracted.getContent()).getTitle(), content.getTitle());
     }
 
 }

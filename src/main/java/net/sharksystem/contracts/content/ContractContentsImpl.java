@@ -2,6 +2,8 @@ package net.sharksystem.contracts.content;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import net.sharksystem.SharkException;
+import net.sharksystem.asap.ASAPPeer;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -13,6 +15,9 @@ public class ContractContentsImpl implements ContractContents {
     private final Map<String, Class<? extends ContractContent>> types = new HashMap<>();
     private final Map<Class<? extends ContractContent>, String> typesReversed = new HashMap<>();
     private final Gson gson = new Gson();
+
+    @Override
+    public void onStart(ASAPPeer asapPeer) { }
 
     @Override
     public ContentPackage extract(byte[] data) throws MalformedContentData, UnknownContentTypeException {

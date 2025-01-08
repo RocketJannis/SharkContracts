@@ -54,6 +54,11 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
     }
 
     @Override
+    public List<ContractSignature> listSignatures(Contract contract) {
+        return storage.findSignatures(contract.getHash());
+    }
+
+    @Override
     public Contract createContract(byte[] content, List<String> otherPartyIds, boolean encrypted) throws SharkException, NoSuchAlgorithmException {
         String authorId = pki.getOwnerID().toString();
         String hash = Contract.hashSignedData(authorId, content, otherPartyIds);
