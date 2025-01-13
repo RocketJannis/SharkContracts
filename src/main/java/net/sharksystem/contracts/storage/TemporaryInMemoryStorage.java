@@ -6,6 +6,7 @@ import net.sharksystem.utils.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implements Contract Storage for testing purposes.
@@ -44,6 +45,6 @@ public class TemporaryInMemoryStorage implements ContractStorage {
         if(contractHash == null) throw new NullPointerException("contractHash must not be null");
         return signatures.stream()
                 .filter(s -> s.getContractHash().equals(contractHash))
-                .toList();
+                .collect(Collectors.toList());
     }
 }

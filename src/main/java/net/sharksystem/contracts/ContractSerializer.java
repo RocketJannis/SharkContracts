@@ -1,5 +1,7 @@
 package net.sharksystem.contracts;
 
+import net.sharksystem.contracts.util.DataInputStreamHelper;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,15 +46,15 @@ public class ContractSerializer {
             for(int i = 0; i < otherPartiesSize; i++){
                 String id = dis.readUTF();
                 int keyLength = dis.readInt();
-                byte[] key = dis.readNBytes(keyLength);
+                byte[] key = DataInputStreamHelper.readNBytes(dis, keyLength);
                 otherParties.add(new ContractParty(id, key));
             }
             int contentLength = dis.readInt();
-            byte[] content = dis.readNBytes(contentLength);
+            byte[] content = DataInputStreamHelper.readNBytes(dis, contentLength);
             boolean encrypted = dis.readBoolean();
             String hash = dis.readUTF();
             int signatureLength = dis.readShort();
-            byte[] signature = dis.readNBytes(signatureLength);
+            byte[] signature = DataInputStreamHelper.readNBytes(dis, signatureLength);
             dis.close();
 
             return new Contract(authorId, content, otherParties, encrypted, hash, signature);

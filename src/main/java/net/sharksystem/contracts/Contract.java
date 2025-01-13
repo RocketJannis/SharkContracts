@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Contract {
 
@@ -40,7 +41,7 @@ public class Contract {
     }
 
     public List<String> getOtherPartyIds(){
-        return otherParties.stream().map(ContractParty::getId).toList();
+        return otherParties.stream().map(ContractParty::getId).collect(Collectors.toList());
     }
 
     /**

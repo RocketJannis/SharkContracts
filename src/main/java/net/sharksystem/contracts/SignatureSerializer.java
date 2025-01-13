@@ -1,5 +1,7 @@
 package net.sharksystem.contracts;
 
+import net.sharksystem.contracts.util.DataInputStreamHelper;
+
 import java.io.*;
 
 public class SignatureSerializer {
@@ -30,7 +32,7 @@ public class SignatureSerializer {
             String contractHash = dis.readUTF();
             String author = dis.readUTF();
             int signatureLength = dis.readInt();
-            byte[] signature = dis.readNBytes(signatureLength);
+            byte[] signature = DataInputStreamHelper.readNBytes(dis, signatureLength);
             dis.close();
 
             return new ContractSignature(contractHash, author, signature);

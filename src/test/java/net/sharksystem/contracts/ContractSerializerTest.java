@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ContractSerializerTest {
 
@@ -15,7 +16,7 @@ public class ContractSerializerTest {
         String authorId = "test_sender";
         byte[] content = "abcdefg".getBytes(StandardCharsets.UTF_8);
         List<ContractParty> otherParties = Arrays.asList(new ContractParty("Alice", new byte[]{ 1, 2 }), new ContractParty("Bob", new byte[]{ 3, 4 }));
-        String hash = Contract.hashSignedData(authorId, content, otherParties.stream().map(ContractParty::getId).toList());
+        String hash = Contract.hashSignedData(authorId, content, otherParties.stream().map(ContractParty::getId).collect(Collectors.toList()));
         byte[] signature = "sig".getBytes(StandardCharsets.UTF_8);
 
         Contract contract = new Contract(authorId, content, otherParties, false, hash, signature);

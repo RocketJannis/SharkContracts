@@ -1,6 +1,8 @@
 package net.sharksystem.contracts;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class TestUtils {
@@ -8,7 +10,7 @@ public class TestUtils {
     public static final String BOB = "bob";
     public static final String APP_NAME = "contracts";
     public static final String APP_URI = "contract://data";
-    public static final List<CharSequence> supportedFormats = List.of(APP_NAME);
+    public static final List<CharSequence> supportedFormats = Collections.singletonList(APP_NAME);
 
     /**
      * a serialization example

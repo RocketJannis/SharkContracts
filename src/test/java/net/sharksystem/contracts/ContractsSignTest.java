@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -84,7 +85,7 @@ public class ContractsSignTest {
         ASAPCertificate bobsCertIssuedByAlice = alicePKI.getCertificates().stream().findFirst().get();
         byte[] testContent = "Hello world!".getBytes(StandardCharsets.UTF_8);
         Assertions.assertEquals(0, aliceContracts.listContracts().size());
-        aliceContracts.createContract(testContent, List.of(bobsCertIssuedByAlice.getSubjectID().toString()), encrypted);
+        aliceContracts.createContract(testContent, Arrays.asList(bobsCertIssuedByAlice.getSubjectID().toString()), encrypted);
         Assertions.assertEquals(1, aliceContracts.listContracts().size());
 
         // Encounter so bob knows the contract

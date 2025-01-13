@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedListener {
@@ -45,7 +46,7 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
         return pki.getCertificates()
                 .stream()
                 .map((certificate) -> certificate.getSubjectID().toString())
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -63,7 +64,10 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
         String authorId = pki.getOwnerID().toString();
         String hash = Contract.hashSignedData(authorId, content, otherPartyIds);
         byte[] signature = ASAPCryptoAlgorithms.sign(hash.getBytes(StandardCharsets.UTF_8), pki.getASAPKeyStore());
-        List<ContractParty> otherParties = otherPartyIds.stream().map((id) -> new ContractParty(id, new byte[0])).toList();
+        List<ContractParty> otherParties = otherPartyIds.stream()
+                .map((id) -> new ContractParty(id, new byte[0]))
+                .collect(Collectors.toList());
+
         Contract unencryptedContract = new Contract(authorId, content, otherParties, false, hash, signature);
         Contract encryptedContract;
         if(encrypted){
@@ -207,7 +211,7 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
         Optional<ContractParty> myPartyOptional = contract.getOtherParties()
                 .stream()
                 .filter((party) -> myId.equals(party.getId())).findFirst();
-        if(myPartyOptional.isEmpty()) throw new ASAPSecurityException("Cannot find encryption key for " + myId);
+        if(!myPartyOptional.isPresent()) throw new ASAPSecurityException("Cannot find encryption key for " + myId);
         ContractParty myParty = myPartyOptional.get();
 
         // Decrypt key
