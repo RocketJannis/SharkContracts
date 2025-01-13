@@ -56,4 +56,8 @@ public interface SharkContracts extends SharkComponent {
 
     boolean isSignedByAllParties(Contract contract);
 
+    void registerListener(ContractsListener listener);
+
+    void unregisterListener(ContractsListener listener);
+
 }

@@ -28,6 +28,7 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
     private final SharkPeer me;
     private final SharkPKIComponent pki;
     private final ContractStorage storage;
+    private final List<ContractsListener> listeners = new ArrayList<>();
 
     public SharkContractsImpl(SharkPeer me, ContractStorage storage, SharkPKIComponent pki) {
         this.me = me;
@@ -158,6 +159,9 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
             if(verifyContract(contract)){
                 Log.writeLog(this, "Verification successful.");
                 storage.insertContract(contract);
+                for(ContractsListener listener : listeners){
+                    listener.onContractReceived(contract);
+                }
             }else{
                 Log.writeLog(this, "Verification failed.");
             }
@@ -174,6 +178,9 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
             if(verifySignature(signature)){
                 Log.writeLog(this, "Verification successful.");
                 storage.insertSignature(signature);
+                for(ContractsListener listener : listeners){
+                    listener.onSignatureReceived(signature);
+                }
             }else{
                 Log.writeLog(this, "Verification failed.");
             }
@@ -225,4 +232,13 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
         return new Contract(contract.getAuthorId(), unencryptedContent, contract.getOtherParties(), false, contract.getHash(), contract.getSignature());
     }
 
+    @Override
+    public void registerListener(ContractsListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void unregisterListener(ContractsListener listener) {
+        listeners.remove(listener);
+    }
 }
