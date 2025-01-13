@@ -155,6 +155,10 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
         try {
             Contract encryptedContract = ContractSerializer.deserialize(data);
             Log.writeLog(this, "Received contract " + encryptedContract.getHash());
+            if(storage.findContract(encryptedContract.getHash()) != null){
+                Log.writeLog(this, "Contract with same hash id already exists, discarding");
+                return;
+            }
             Contract contract = decryptContract(encryptedContract);
             if(verifyContract(contract)){
                 Log.writeLog(this, "Verification successful.");
