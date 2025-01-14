@@ -43,10 +43,12 @@ public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedLi
     }
 
     @Override
-    public List<String> getKnownPeers() {
+    public List<String> getKnownPeers() throws SharkException {
+        String myId = me.getPeerID().toString();
         return pki.getCertificates()
                 .stream()
                 .map((certificate) -> certificate.getSubjectID().toString())
+                .filter((peer) -> !peer.equals(myId))
                 .collect(Collectors.toList());
     }
 

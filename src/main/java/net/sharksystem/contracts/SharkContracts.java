@@ -17,7 +17,7 @@ public interface SharkContracts extends SharkComponent {
     String URI_CONTRACT = "contracts://contract";
     String URI_SIGNATURE = "contracts://signature";
 
-    List<String> getKnownPeers();
+    List<String> getKnownPeers() throws SharkException;
 
     List<Contract> listContracts();
 
