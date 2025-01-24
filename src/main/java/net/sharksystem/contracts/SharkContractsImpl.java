@@ -19,7 +19,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+/**
+ * Implementation of SharkContracts
+ * @see SharkContracts
+ */
 public class SharkContractsImpl implements SharkContracts, ASAPMessageReceivedListener {
 
     private static final String SYMMETRIC_ALGORITHM = "AES";

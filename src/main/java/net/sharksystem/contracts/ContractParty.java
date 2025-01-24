@@ -3,20 +3,36 @@ package net.sharksystem.contracts;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Represents a contract party
+ */
 public class ContractParty {
 
     private final String id;
     private final byte[] encryptedKey;
 
+    /**
+     * Represents a contract party
+     * @param id ASAP identifier of this party
+     * @param encryptedKey the symmetric key of the contract contents encrypted using the public key of this party. should be an empty array if the contract is not encrypted
+     */
     public ContractParty(String id, byte[] encryptedKey) {
         this.id = id;
         this.encryptedKey = encryptedKey;
     }
 
+    /**
+     *
+     * @return ASAP identifier of this party
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     *
+     * @return the symmetric key of the contract contents encrypted using the public key of this party. should be an empty array if the contract is not encrypted
+     */
     public byte[] getEncryptedKey() {
         return encryptedKey;
     }

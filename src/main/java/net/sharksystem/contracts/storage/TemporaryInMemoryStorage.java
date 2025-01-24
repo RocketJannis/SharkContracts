@@ -2,14 +2,13 @@ package net.sharksystem.contracts.storage;
 
 import net.sharksystem.contracts.Contract;
 import net.sharksystem.contracts.ContractSignature;
-import net.sharksystem.utils.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Implements Contract Storage for testing purposes.
+ * Implements Contract Storage for testing purposes by using lists.
  */
 public class TemporaryInMemoryStorage implements ContractStorage {
 

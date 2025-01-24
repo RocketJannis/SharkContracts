@@ -2,6 +2,10 @@ package net.sharksystem.contracts.content;
 
 import java.util.Date;
 
+/**
+ * Class for internal use. It represents the state between the serialization steps
+ * @see ContractContentsImpl#pack(ContractContent)
+ */
 public class InternalContentPackage {
 
     private final String type;

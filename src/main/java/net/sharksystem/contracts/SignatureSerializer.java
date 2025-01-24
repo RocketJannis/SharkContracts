@@ -4,6 +4,10 @@ import net.sharksystem.contracts.util.DataInputStreamHelper;
 
 import java.io.*;
 
+/**
+ * Utility to serialize/deserialize contract signature objects
+ * @see ContractSignature
+ */
 public class SignatureSerializer {
 
     public static byte[] serialize(ContractSignature signature){

@@ -14,6 +14,8 @@ public class ContentTest {
         byte[] data = contents.pack(content);
         ContentPackage extracted = contents.extract(data);
 
+        System.out.println(new String(data));
+
         Assertions.assertInstanceOf(TextContent.class, extracted.getContent());
         Assertions.assertEquals(((TextContent) extracted.getContent()).getText(), content.getText());
         Assertions.assertEquals(((TextContent) extracted.getContent()).getTitle(), content.getTitle());

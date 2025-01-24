@@ -6,6 +6,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility to serialize/deserialize contract objects
+ * @see Contract
+ */
 public class ContractSerializer {
 
     public static byte[] serialize(Contract contract){

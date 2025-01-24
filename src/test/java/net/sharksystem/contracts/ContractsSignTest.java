@@ -99,6 +99,7 @@ public class ContractsSignTest {
         // Sign contract using bob
         Assertions.assertEquals(1, bobContracts.listContracts().size());
         Contract contract = bobContracts.listContracts().get(0);
+        Assertions.assertArrayEquals(testContent, contract.getContent());
         bobContracts.signContract(contract);
 
         // Encounter so alice knows the signature

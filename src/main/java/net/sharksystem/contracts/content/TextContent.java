@@ -1,5 +1,8 @@
 package net.sharksystem.contracts.content;
 
+/**
+ * Simple free-form text content with a title and text
+ */
 public class TextContent extends ContractContent {
 
     public final String title;
