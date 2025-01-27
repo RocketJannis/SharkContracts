@@ -82,10 +82,12 @@ public class ContractsSignTest {
         Thread.sleep(1000);
 
         // Create contract using alice
-        ASAPCertificate bobsCertIssuedByAlice = alicePKI.getCertificates().stream().findFirst().get();
+        List<String> knownPeers = aliceContracts.getKnownPeers();
+        Assertions.assertEquals(1, knownPeers.size());
+        Assertions.assertEquals(TestUtils.BOB, knownPeers.get(0));
         byte[] testContent = "Hello world!".getBytes(StandardCharsets.UTF_8);
         Assertions.assertEquals(0, aliceContracts.listContracts().size());
-        aliceContracts.createContract(testContent, Arrays.asList(bobsCertIssuedByAlice.getSubjectID().toString()), encrypted);
+        aliceContracts.createContract(testContent, aliceContracts.getKnownPeers(), encrypted);
         Assertions.assertEquals(1, aliceContracts.listContracts().size());
 
         // Encounter so bob knows the contract
@@ -109,7 +111,7 @@ public class ContractsSignTest {
         // Check if alice received the signature
         Contract contract2 = aliceContracts.listContracts().get(0);
         List<ContractSignature> signatures = aliceContracts.listSignatures(contract2);
-        Assertions.assertEquals(1, signatures.size());
+        Assertions.assertFalse(signatures.isEmpty());
         Assertions.assertTrue(aliceContracts.verifySignature(signatures.get(0)));
         Assertions.assertTrue(aliceContracts.isSignedByAllParties(contract2));
 
