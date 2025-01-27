@@ -5,6 +5,7 @@ import net.sharksystem.SharkPeer;
 import net.sharksystem.asap.*;
 import net.sharksystem.asap.crypto.ASAPCryptoAlgorithms;
 import net.sharksystem.contracts.storage.ContractStorage;
+import net.sharksystem.contracts.util.ASAPCryptoUtilsExtension;
 import net.sharksystem.pki.SharkPKIComponent;
 import net.sharksystem.utils.Log;
 

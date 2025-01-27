@@ -1,4 +1,4 @@
-package net.sharksystem.contracts;
+package net.sharksystem.contracts.util;
 
 import net.sharksystem.asap.ASAPSecurityException;
 import net.sharksystem.asap.crypto.ASAPKeyStore;
@@ -15,6 +15,10 @@ public class ASAPCryptoUtilsExtension {
 
     /**
      * Uses asymmetric encryption to encrypt the unencryptedBytes using the public key of the recipient.
+     * <p>
+     * This method is currently not Part if ASAPCryptoAlgorithms so it needs to be implemented here, see
+     * <a href="https://github.com/SharedKnowledge/ASAPJava/issues/10">Github Issue</a>
+     *
      * @param unencryptedBytes bytes to encrypt
      * @param recipient identifier of the recipient
      * @param ASAPKeyStore key store that holds the public key of the recipient

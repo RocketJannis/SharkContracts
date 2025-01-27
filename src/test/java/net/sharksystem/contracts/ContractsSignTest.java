@@ -76,10 +76,7 @@ public class ContractsSignTest {
         autoAcceptCerts(bobPKI);
 
         // Encounter so both parties know each other
-        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
-        Thread.sleep(1000);
-        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
-        Thread.sleep(1000);
+        encounter(aliceASAP, bobASAP);
 
         // Create contract using alice
         List<String> knownPeers = aliceContracts.getKnownPeers();
@@ -91,10 +88,7 @@ public class ContractsSignTest {
         Assertions.assertEquals(1, aliceContracts.listContracts().size());
 
         // Encounter so bob knows the contract
-        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
-        Thread.sleep(1000);
-        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
-        Thread.sleep(1000);
+        encounter(aliceASAP, bobASAP);
 
         // Sign contract using bob
         Assertions.assertEquals(1, bobContracts.listContracts().size());
@@ -103,10 +97,7 @@ public class ContractsSignTest {
         bobContracts.signContract(contract);
 
         // Encounter so alice knows the signature
-        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
-        Thread.sleep(1000);
-        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
-        Thread.sleep(1000);
+        encounter(aliceASAP, bobASAP);
 
         // Check if alice received the signature
         Contract contract2 = aliceContracts.listContracts().get(0);
@@ -117,6 +108,17 @@ public class ContractsSignTest {
 
         alicePeer.stop();
         bobPeer.stop();
+    }
+
+    private void encounter(ASAPTestPeerFS peer1, ASAPTestPeerFS peer2) throws IOException, InterruptedException {
+        peer1.startEncounter(AppTests.getPortNumber(), peer2);
+        Thread.sleep(1000);
+        peer1.stopEncounter(peer2);
+        Thread.sleep(500);
+        peer2.startEncounter(AppTests.getPortNumber(), peer1);
+        Thread.sleep(1000);
+        peer2.stopEncounter(peer1);
+        Thread.sleep(500);
     }
 
     private SharkPeer getPreparedPeer(String name) throws SharkException {
