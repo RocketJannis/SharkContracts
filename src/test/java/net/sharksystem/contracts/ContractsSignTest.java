@@ -80,6 +80,8 @@ public class ContractsSignTest {
         Thread.sleep(1000);
         aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
         Thread.sleep(1000);
+        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
+        Thread.sleep(1000);
 
         // Create contract using alice
         List<String> knownPeers = aliceContracts.getKnownPeers();
@@ -95,6 +97,8 @@ public class ContractsSignTest {
         Thread.sleep(1000);
         aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
         Thread.sleep(1000);
+        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
+        Thread.sleep(1000);
 
         // Sign contract using bob
         Assertions.assertEquals(1, bobContracts.listContracts().size());
@@ -103,6 +107,8 @@ public class ContractsSignTest {
         bobContracts.signContract(contract);
 
         // Encounter so alice knows the signature
+        aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
+        Thread.sleep(1000);
         aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
         Thread.sleep(1000);
         aliceASAP.startEncounter(AppTests.getPortNumber(), bobASAP);
