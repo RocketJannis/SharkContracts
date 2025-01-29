@@ -4,9 +4,9 @@ This library uses [ASAP](https://github.com/SharedKnowledge/ASAPJava) and [Shark
 
 ## Usage
 
-Examples for the usage of the library can be seen in the [ContractsSignSimpleTest](https://home.tadris.de/git/jannis/SharkContracts/src/branch/master/src/test/java/net/sharksystem/contracts/ContractsSignSimpleTest.java), [ContractsSignTest](https://home.tadris.de/git/jannis/SharkContracts/src/branch/master/src/test/java/net/sharksystem/contracts/ContractsSignTest.java) or the [sample android app](https://home.tadris.de/git/jannis/SharkContractsSample).
+Examples for the usage of the library can be seen in the [ContractsSignSimpleTest](https://github.com/RocketJannis/SharkContracts/blob/master/src/test/java/net/sharksystem/contracts/ContractsSignSimpleTest.java), [ContractsSignTest](https://github.com/RocketJannis/SharkContracts/blob/master/src/test/java/net/sharksystem/contracts/ContractsSignTest.java) or the [sample android app](https://github.com/RocketJannis/SharkContractsSample).
 
-The javadoc of [SharkContracts](https://home.tadris.de/git/jannis/SharkContracts/src/branch/master/src/main/java/net/sharksystem/contracts/SharkContracts.java) explains the available methods in detail.
+The javadoc of [SharkContracts](https://github.com/RocketJannis/SharkContracts/blob/master/src/main/java/net/sharksystem/contracts/SharkContracts.java) explains the available methods in detail.
 
 First, instantiate the component:
 
